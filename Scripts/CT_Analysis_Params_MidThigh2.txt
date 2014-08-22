@@ -1,0 +1,14 @@
+AUtoDensitySlope 1724
+AUtoDensityIntercept -322
+SmoothingSigma 0.5
+MedianFilterRadius 2
+LevelSetSigmoidBeta 55
+SigmoidBetaAlphaRatio 4.5
+FastMarchingStoppingTime 10.0
+LevelSetPropagationScalingFactor 0.5
+LevelSetCurvatureScalingFactor 0.1
+LevelSetAdvectionScalingFactor 1.5
+LevelsetMaximumIterations 250
+LevelsetMaximumRMSError 0.015
+SAT_IMFAT_SeparationAlgorithm 1
+CT_LegThreshold -150
