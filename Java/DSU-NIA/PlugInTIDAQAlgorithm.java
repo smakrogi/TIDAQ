@@ -3,7 +3,7 @@
  * By extending AlgorithmBase, it has no more functionality than any other algorithm in MIPAV.
  * No functionality specifically makes it a plug-in.
  * 
- * @author Sokratis Makrogiannis (makrogianniss@mail.nih.gov)
+ * @author Sokratis Makrogiannis (smakrogiannis@desu.edu,makrogianniss@mail.nih.gov)
  * @see http://mipav.cit.nih.gov
  */
 

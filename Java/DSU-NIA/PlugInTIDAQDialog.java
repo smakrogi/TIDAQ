@@ -1,11 +1,11 @@
 /**
  * This class displays a basic dialog for a MIPAV plug-in. 
  * @author Sokratis Makrogiannis, makrogianniss@mail.nih.gov
- * @version  July 31, 2012
+ * @version  May 19, 2015
  * @see      
  * @see      JDialogStandalonePlugin
  *
- * @author Sokratis Makrogiannis (makrogianniss@mail.nih.gov)
+ * @author Sokratis Makrogiannis (smakrogiannis@desu.edu,makrogianniss@mail.nih.gov)
  */
 
 import gov.nih.mipav.model.file.FileIO;
