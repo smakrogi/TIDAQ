@@ -1,7 +1,7 @@
 /**
  * JNI for PQCT analysis pipelines written in ITK. 
  *
- * @author Sokratis Makrogiannis (makrogianniss@mail.nih.gov)
+ * @author Sokratis Makrogiannis (smakrogiannis@desu.edu,makrogianniss@mail.nih.gov)
  * @see    JNI
  */
 
