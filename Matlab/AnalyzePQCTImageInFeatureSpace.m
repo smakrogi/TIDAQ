@@ -3,19 +3,25 @@ function tissueLabelImage = AnalyzePQCTImageInFeatureSpace(dataPath, filename)
 
 %dataPath = '/home/makrogianniss/Data/Sardinia/raw.092410/';
 nBins = 256;
-nComponents = 3;
-backgroundThreshold = 150;
-boneThreshold = 400;
-denoising = 'wiener'; % options are: '', 'median', 'wiener'
+nComponents = 4; %4:38%,66%; 4:4%
+backgroundThreshold = -200; % -100:4% -200:38%,66%
+boneThreshold = 1400; %400; 1500
+denoising = 'median'; % options are: '', 'median', 'wiener'
 clusteringMethod = 'emgmmbaycls'; % options are: 'k-means', 'fcm', 'emgmmbaycls'
 outputPath = './';
 
 % Read Image.
 inputImage = ReadPQCTImage( [dataPath filename] );
-figure, subplot(211), imagesc(inputImage), colorbar, axis image, ...
-    title(['Input Image of ', filename]);
+
+inputImage = 1724*(double(inputImage)/1000) - 322;
+
+figure, subplot(211), imagesc(inputImage), colormap gray, colorbar, axis image, axis off, ...
+%     title(['Input Image of ', filename]);
+    title(['Input Image'], 'fontsize', 14);
+    
 subplot(212), hist(double(inputImage(:)), nBins), ...
-    title(['Intensity Histogram of ', filename]);
+%     title(['Intensity Histogram of ', filename]);
+    title(['Intensity Histogram'], 'fontsize', 14);
 saveas(gcf, [outputPath, filename, '_', 'InputImage', '.png']);
 
 % Denoise image.
@@ -30,10 +36,14 @@ end
 
 switch(lower(denoising))
     case{'median','wiener'}
-        figure, subplot(211), imagesc(filteredImage), colorbar, axis image, ...
-            title(['Denoised Image of', filename]);
+        figure, subplot(211), imagesc(filteredImage), colormap gray, colorbar, axis image, axis off, ...
+%             title(['Denoised Image of', filename]);
+            title(['Denoised Image'], 'fontsize', 14);    
+            
         subplot(212), hist(double(filteredImage(:)), nBins), ...
-            title(['Intensity Histogram of ', filename]);
+%             title(['Intensity Histogram of ', filename]);
+            title(['Intensity Histogram'], 'fontsize', 14);     
+            
         saveas(gcf, [outputPath, filename, '_', denoising, '_', 'DenoisedImage', '.png']);
     otherwise
 end
@@ -54,12 +64,17 @@ fatandmuscleImage = fatandmuscleMask .* double(filteredImage);
 [fatandmuscleIndices.x,  fatandmuscleIndices.y, fatandmuscleVector] = ...
     find( fatandmuscleImage );
 fatandmuscleVector = double(fatandmuscleVector);
-figure, subplot(211), ...
-    imagesc(fatandmuscleImage), colorbar, axis image,  ...
-    title(['Fat and Muscle Image of ', filename]);
+
+figure, subplot(211), axis off, ...
+    imagesc(fatandmuscleImage, [-400, boneThreshold]), ...
+    colormap gray, colorbar, axis image,  axis off, ...
+%     title(['Fat and Muscle Image of ', filename]);
+title(['Fat, Muscle and Bone Image'], 'fontsize', 14);
+
 subplot(212), hist(double(fatandmuscleVector(:)), nBins)
 axis([backgroundThreshold boneThreshold 0 2000]), ...
-    title(['Intensity Histogram of ', filename]);
+%     title(['Intensity Histogram of ', filename]);
+    title(['Intensity Histogram'], 'fontsize', 14);
 saveas(gcf, [outputPath, filename, '_', denoising, '_', ...
     'FatandMuscleImage', '.png']);
 
@@ -79,15 +94,29 @@ switch lower(clusteringMethod)
         % EM and GMM.
         STPR_PATH = getenv('STPR_PATH');
         stprpath(STPR_PATH);
+        
+        initial_model = struct('Mean',[-22 72 514 993],'Cov',[32^2 42^2 72^2 302^2],'Prior',[0.32 0.61 0.04 0.03]);
         model = emgmm(fatandmuscleVector', struct('ncomp', nComponents, ...
-            'verb',1, 'init', 'cmeans', 'cov_type', 'full'));
+            'verb',1, 'init', 'cmeans', 'cov_type', 'full')); % For 66%
+%         model = emgmm(fatandmuscleVector', struct('ncomp', nComponents, ...
+%             'verb',1, 'init', 'cmeans', 'cov_type', 'full'));
         disp(model);
-        figure, ppatterns(fatandmuscleVector')
+        
+        figure, % ppatterns(fatandmuscleVector')
+%         h2=pgmm(initial_model,struct('color','b'));
         h2=pgmm(model,struct('color','b'));
-        axis([backgroundThreshold boneThreshold 0 0.1]),  ...
-            title(['Fat and Muscle Intensity Histogram of ', filename])
+        set(h2,'linewidth', 2)
+        axis([backgroundThreshold boneThreshold 0 0.01]),  ...
+%         xlabel('Density $mg/cm^3$','Interpreter','latex', 'fontsize', 14);
+        xlabel('Density mg/cm^3', 'fontsize', 14);
+        ylabel('Probability', 'fontsize', 14);
+%         title(['Fat and Muscle Intensity Histogram of ', filename])
+        title('66% Tibia Site - Tissue Density Model', 'fontsize', 16)
+        
         saveas(gcf, [outputPath, filename, '_', denoising, '_', ...
             clusteringMethod, '_', 'HistogramModel', '.png']);
+        saveas(gcf, [outputPath, filename, '_', denoising, '_', ...
+            clusteringMethod, '_', 'HistogramModel', '.fig']);
         
         for i=1:nComponents
             bayesModel.Pclass{i}.Mean = model.Mean(:,i);
