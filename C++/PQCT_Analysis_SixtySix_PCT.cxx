@@ -18,6 +18,7 @@
 #include <itkConnectedComponentImageFilter.h>
 #include <itkRelabelComponentImageFilter.h>
 #include <itkImageFileWriter.h>
+#include <ctime>
 
 #include "PQCT_Datatypes.h"
 #include "PQCT_Analysis.h"
@@ -326,6 +327,9 @@ void PQCT_Analyzer::Analyze66PCT(){
     return;
   }
   
+  //! Start clock.
+  std::clock_t begin = std::clock();
+
   //! Foreground background segmentation.
   std::cout << "--------Quantification at 66% Tibia--------" << std::endl;
 
@@ -361,6 +365,26 @@ void PQCT_Analyzer::Analyze66PCT(){
   // //! 3. Remove fibula from computation.
   this->IdentifyTibiaAndFibula();
 
+
+  //  //! Hole filling.
+  //typedef itk::GrayscaleFillholeImageFilter<LabelImageType,LabelImageType> 
+  //  BinaryHoleFillingFilterType;
+
+  //BinaryHoleFillingFilterType::Pointer binaryHoleFillingFilter =
+  //  BinaryHoleFillingFilterType::New();
+  //binaryHoleFillingFilter->SetInput( this->m_TissueLabelImage );
+  //// binaryHoleFillingFilter->InPlaceOn(); 
+  //binaryHoleFillingFilter->Update();
+
+  //for(itImage.GoToBegin();!itImage.IsAtEnd();++itImage) {
+  //  LabelImageType::IndexType idx = itImage.GetIndex();
+  //  if( binaryHoleFillingFilter->GetOutput()->GetPixel(idx) == IM_FAT )
+  //    itImage.Set( MUSCLE );
+  //  else 
+  //    itImage.Set( AIR );
+  //}
+
+
  // //! 5. Compute: bone, muscle, fat areas, and bone, muscle density.
   // // Display results.
   this->LogHeaderInfo();
@@ -375,7 +399,21 @@ void PQCT_Analyzer::Analyze66PCT(){
   //! Compute centroid and density over total leg.
   this->ComputeTissueShapeAttributes( totalLegCrosssectionImage );
   this->ComputeTissueIntensityAttributes( totalLegCrosssectionImage );
-  
+
+ //! Stop the clock.
+  std::clock_t end = std::clock();
+  double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+
+  //! Pass Elapsed_Time to stringstream.
+  std::stringstream tempStringstream;
+  tempStringstream.str("");
+  tempStringstream <<  "Elapsed_Time";
+  this->m_TissueIntensityEntries.headerString.width(STRING_LENGTH);
+  this->m_TissueIntensityEntries.headerString << tempStringstream.str();
+
+  this->m_TissueIntensityEntries.valueString.width(STRING_LENGTH); 
+  this->m_TissueIntensityEntries.valueString << elapsed_secs;
+
   // Write results to text file.
   this->WriteToTextFile();
 

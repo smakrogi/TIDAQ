@@ -25,6 +25,7 @@
 #include <itkImageFileWriter.h>
 #include <vector>
 #include <algorithm>
+#include <ctime>
 
 #include <itkDecisionRule.h>
 #include <itkVector.h>
@@ -402,6 +403,9 @@ void PQCT_Analyzer::AnalyzeCTMidThigh(){
     return;
   }
 
+  //! Start clock.
+  std::clock_t begin = std::clock();
+
   std::cout << "--------Quantification at middle thigh--------" << std::endl;
 
 
@@ -487,10 +491,22 @@ void PQCT_Analyzer::AnalyzeCTMidThigh(){
   this->ComputeTissueShapeAttributes( totalLegCrosssectionImage );
   this->ComputeTissueIntensityAttributes( totalLegCrosssectionImage );
   
+  //! Stop the clock.
+  std::clock_t end = std::clock();
+  double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+
+  //! Pass Elapsed_Time to stringstream.
+  std::stringstream tempStringstream;
+  tempStringstream.str("");
+  tempStringstream << "Elapsed_Time";
+  this->m_TissueIntensityEntries.headerString.width(STRING_LENGTH);
+  this->m_TissueIntensityEntries.headerString << tempStringstream.str();
+
+  this->m_TissueIntensityEntries.valueString.width(STRING_LENGTH); 
+  this->m_TissueIntensityEntries.valueString << elapsed_secs;
 
   //! Write measurements to text file.
   this->WriteToTextFile();
-
   
   //! Update output label image with the segmentation output.
   this->CopyFinalLabelsinOriginalSpace(outputLabelImage);

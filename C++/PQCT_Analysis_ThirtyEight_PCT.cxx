@@ -12,6 +12,7 @@
 
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkImageFileWriter.h>
+#include <ctime>
 
 #include "PQCT_Datatypes.h"
 #include "PQCT_Analysis.h"
@@ -28,6 +29,9 @@ void PQCT_Analyzer::Analyze38PCT(){
     std::cerr << "unable to open file for writing" << std::endl;
     return;
   }
+
+  //! Start clock.
+  std::clock_t begin = std::clock();
 
   //! Foreground background segmentation.
   std::cout << "--------Quantification at 38% Tibia--------" << std::endl;
@@ -65,6 +69,21 @@ void PQCT_Analyzer::Analyze38PCT(){
   //! Compute centroid and density over total leg.
   this->ComputeTissueShapeAttributes( totalLegCrosssectionImage );
   this->ComputeTissueIntensityAttributes( totalLegCrosssectionImage );
+
+  //! Stop the clock.
+  std::clock_t end = std::clock();
+  double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+
+  //! Pass Elapsed_Time to stringstream.
+  std::stringstream tempStringstream;
+  tempStringstream.str("");
+  tempStringstream <<  "Elapsed_Time";
+  this->m_TissueIntensityEntries.headerString.width(STRING_LENGTH);
+  this->m_TissueIntensityEntries.headerString << tempStringstream.str();
+
+  this->m_TissueIntensityEntries.valueString.width(STRING_LENGTH); 
+  this->m_TissueIntensityEntries.valueString << elapsed_secs;
+
 
   // Write results to text file.
   this->WriteToTextFile();
