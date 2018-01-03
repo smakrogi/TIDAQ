@@ -925,10 +925,10 @@ void PQCT_Analyzer::LogHeaderInfo() {
   this->m_TissueShapeEntries.valueString  << this->m_PatientInformation.PatientName;
 
   // //! Subject gender.
-  // this->m_TissueShapeEntries.headerString.width(STRING_LENGTH_HEADER_TAGS);
-  // this->m_TissueShapeEntries.valueString.width(STRING_LENGTH_HEADER_TAGS);    
-  // this->m_TissueShapeEntries.headerString << "Gender";
-  // this->m_TissueShapeEntries.valueString  << this->m_PatientInformation.PatientGender;
+  this->m_TissueShapeEntries.headerString.width(STRING_LENGTH_HEADER_TAGS);
+  this->m_TissueShapeEntries.valueString.width(STRING_LENGTH_HEADER_TAGS);    
+  this->m_TissueShapeEntries.headerString << "Gender";
+  this->m_TissueShapeEntries.valueString  << this->m_PatientInformation.PatientGender;
 
   // //! Subject measurement number.
   // this->m_TissueShapeEntries.headerString.width(STRING_LENGTH_HEADER_TAGS);
